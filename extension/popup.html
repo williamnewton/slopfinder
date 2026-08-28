@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  :root { color-scheme: dark; }
+  body {
+    width: 300px;
+    margin: 0;
+    background: #16140f;
+    color: #f5f2ea;
+    font: 14px/1.5 system-ui, sans-serif;
+  }
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 14px 16px;
+  }
+  h1 { margin: 0; font-size: 15px; }
+  h1 mark { background: #fcd34d; color: #1d1b17; border-radius: 3px; padding: 0 4px; }
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 16px;
+    border-top: 1px solid #211e18;
+  }
+  .row-label { font-weight: 600; font-size: 13px; }
+  .row-sub { color: #a29b8d; font-size: 11.5px; }
+  .count { color: #fcd34d; font-weight: 700; font-size: 18px; }
+  /* toggle */
+  .switch { position: relative; display: inline-block; width: 40px; height: 22px; flex-shrink: 0; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .knob {
+    position: absolute; inset: 0; cursor: pointer;
+    background: #3a362e; border-radius: 999px; transition: background 0.15s;
+  }
+  .knob::before {
+    content: ""; position: absolute; width: 16px; height: 16px;
+    left: 3px; top: 3px; background: #f5f2ea; border-radius: 50%;
+    transition: transform 0.15s;
+  }
+  .switch input:checked + .knob { background: #fcd34d; }
+  .switch input:checked + .knob::before { transform: translateX(18px); background: #1d1b17; }
+  .actions { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid #211e18; }
+  button {
+    flex: 1;
+    padding: 7px 8px;
+    border: 1px solid #3a362e;
+    border-radius: 8px;
+    background: #211e18;
+    color: #f5f2ea;
+    font: 600 12.5px system-ui, sans-serif;
+    cursor: pointer;
+  }
+  button:hover { filter: brightness(1.15); }
+  #status { margin: 0; padding: 0 16px 10px; color: #a29b8d; font-size: 11.5px; min-height: 16px; }
+  #status.error { color: #fca5a5; }
+  footer { padding: 8px 16px 12px; border-top: 1px solid #211e18; font-size: 11px; color: #6e6a62; }
+  footer a { color: #a29b8d; }
+</style>
+</head>
+<body>
+  <header>
+    <h1>LLM cliché <mark>highlighter</mark></h1>
+    <span class="count" id="page-count">–</span>
+  </header>
+  <div class="row">
+    <div>
+      <div class="row-label">Auto-highlight</div>
+      <div class="row-sub">Runs on every page as it loads · on by default</div>
+    </div>
+    <label class="switch">
+      <input type="checkbox" id="enabled">
+      <span class="knob"></span>
+    </label>
+  </div>
+  <div class="row">
+    <div>
+      <div class="row-label">Patterns</div>
+      <div class="row-sub" id="pattern-count"></div>
+    </div>
+  </div>
+  <div class="actions">
+    <button id="download" type="button">Download JSON</button>
+    <button id="upload" type="button">Upload JSON</button>
+    <button id="reset" type="button">Reset</button>
+  </div>
+  <p id="status"></p>
+  <input type="file" id="file" accept=".json,application/json" hidden>
+  <footer>
+    Patterns adapted from
+    <a href="https://github.com/simonw/tools/blob/main/llm-cliche-highlighter.html" target="_blank" rel="noreferrer">Simon Willison's cliché highlighter</a>.
+    Runs locally; no network requests.
+  </footer>
+  <script src="patterns.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

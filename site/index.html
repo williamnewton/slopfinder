@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cliché Highlighter — every AI cliché, caught in the act</title>
+<meta name="description" content="A Chrome extension that highlights the tells of LLM prose on any page you read. No network calls.">
+<script>
+  // Apply the theme before first paint so there's no flash. Stored choice
+  // wins; the site is dark by default (matching the source prototype).
+  (function () {
+    try {
+      if (localStorage.getItem('theme') === 'light') {
+        document.documentElement.classList.remove('dark');
+      }
+    } catch (e) { /* storage unavailable — stay dark */ }
+  })();
+</script>
+<style>
+  /* ---- Design tokens (ported from the nextjs-prototypes globals.css) ---- */
+  :root {
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.145 0 0);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --primary: oklch(0.205 0 0);
+    --primary-foreground: oklch(0.985 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+    --accent: oklch(0.93 0.03 270);
+    --accent-foreground: oklch(0.37 0.15 280);
+    --border: oklch(0.922 0 0);
+  }
+  .dark {
+    --background: oklch(0.145 0 0);
+    --foreground: oklch(0.985 0 0);
+    --card: oklch(0.205 0 0);
+    --card-foreground: oklch(0.985 0 0);
+    --primary: oklch(0.87 0 0);
+    --primary-foreground: oklch(0.205 0 0);
+    --muted-foreground: oklch(0.708 0 0);
+    --accent: oklch(0.30 0.07 275);
+    --accent-foreground: oklch(0.85 0.12 280);
+    --border: oklch(1 0 0 / 10%);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+      "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+
+  main {
+    position: relative;
+    z-index: 10;
+    max-width: 42rem;
+    margin: 0 auto;
+    padding: 5rem 1rem 6rem;
+  }
+  @media (min-width: 640px) { main { padding-top: 7rem; } }
+
+  /* ---- Highlighter sweep (ported from styles.tsx) ------------------------
+     The sweep animates background-size on the <mark> itself so highlights
+     that wrap across lines still paint correctly (box-decoration-break:
+     clone gives each line fragment its own sweep). Delays are driven by a
+     per-mark --i index. Highlighter yellow is the brand color — identical in
+     light and dark mode, with fixed dark ink text. */
+  .ch-mark {
+    --ch-delay: calc(600ms + var(--i, 0) * 620ms);
+    --ch-yellow: #fcd34d;
+    --ch-ink: #1d1b17;
+    background-color: transparent;
+    /* ch-hold pins the inherited text color until the sweep lands, then
+       expires, leaving the declared ink (see source prototype for why a
+       color animation with fill-forwards is not usable here). */
+    color: var(--ch-ink);
+    background-image: linear-gradient(var(--ch-yellow), var(--ch-yellow));
+    background-repeat: no-repeat;
+    background-size: 0% 100%;
+    background-position: 0 0;
+    border-radius: 0.2em;
+    padding: 0.08em 0.18em;
+    margin: -0.08em -0.18em;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    animation:
+      ch-sweep 520ms cubic-bezier(0.16, 1, 0.3, 1) both,
+      ch-hold linear;
+    animation-delay: var(--ch-delay), 0ms;
+    animation-duration: 520ms, calc(var(--ch-delay) + 240ms);
+  }
+  @keyframes ch-sweep {
+    from { background-size: 0% 100%; }
+    to { background-size: 100% 100%; }
+  }
+  @keyframes ch-hold {
+    from { color: inherit; }
+    to { color: inherit; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ch-mark {
+      animation: none;
+      background-size: 100% 100%;
+      color: var(--ch-ink);
+    }
+  }
+
+  /* ---- Theme toggle ---- */
+  .theme-toggle {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 9999px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--muted-foreground);
+    cursor: pointer;
+    transition: color 0.15s;
+    padding: 0;
+  }
+  .theme-toggle:hover { color: var(--foreground); }
+  @media (min-width: 640px) { .theme-toggle { right: 1.5rem; top: 1.5rem; } }
+  .theme-toggle svg { width: 1rem; height: 1rem; }
+  .theme-toggle .icon-sun { display: none; }
+  .dark .theme-toggle .icon-sun { display: block; }
+  .dark .theme-toggle .icon-moon { display: none; }
+
+  /* ---- Hero ---- */
+  h1 {
+    margin: 0;
+    font-size: 2.25rem;
+    line-height: 1.25;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+  @media (min-width: 640px) { h1 { font-size: 3rem; } }
+  .hero-break { display: block; }
+  @media (min-width: 640px) { .hero-break { display: inline; } }
+  .hero-sub {
+    margin: 1.25rem 0 0;
+    max-width: 36rem;
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+    color: var(--muted-foreground);
+  }
+  .ctas {
+    margin-top: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: 2.75rem;
+    padding: 0 1.25rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    text-decoration: none;
+  }
+  .cta svg { width: 1rem; height: 1rem; }
+  .cta-primary {
+    background: var(--primary);
+    color: var(--primary-foreground);
+    font-weight: 600;
+    transition: opacity 0.15s;
+  }
+  .cta-primary:hover { opacity: 0.9; }
+  .cta-secondary {
+    border: 1px solid var(--border);
+    background: var(--card);
+    font-weight: 500;
+    transition: background-color 0.15s, color 0.15s;
+  }
+  .cta-secondary:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+
+  /* ---- Demo ---- */
+  .demo { margin-top: 3.5rem; }
+  .demo-card {
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    background: var(--card);
+    color: var(--card-foreground);
+    padding: 1.25rem;
+    line-height: 1.625;
+  }
+  @media (min-width: 640px) { .demo-card { padding: 1.75rem; } }
+  .demo-card p { margin: 0; }
+  .demo-card p + p { margin-top: 1rem; }
+  .demo-status {
+    margin-top: 0.5rem;
+    display: flex;
+    height: 1.25rem;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+  }
+  .demo-status .pattern-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .demo-status .tally {
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .demo-status .tally b { font-weight: 600; color: var(--foreground); }
+
+  footer {
+    margin-top: 4rem;
+    border-top: 1px solid var(--border);
+    padding-top: 1rem;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    color: var(--muted-foreground);
+  }
+  footer a {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  footer a:hover { color: var(--foreground); }
+</style>
+</head>
+<body>
+<main>
+  <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+  </button>
+
+  <header>
+    <h1>
+      Every AI cliché,
+      <span class="hero-break"><mark class="ch-mark" style="--i: 0">caught in the act</mark>.</span>
+    </h1>
+    <p class="hero-sub">
+      A Chrome extension that highlights the tells of LLM prose on any page
+      you read. <span id="pattern-count">38</span> patterns. No network calls.
+    </p>
+    <div class="ctas">
+      <a class="cta cta-primary" href="downloads/slopfinder-extension.zip" download>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+        Download
+      </a>
+      <a class="cta cta-secondary" href="https://github.com/simonw/tools/blob/main/llm-cliche-highlighter.html" target="_blank" rel="noreferrer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+        GitHub
+      </a>
+    </div>
+  </header>
+
+  <section class="demo" aria-label="Demo">
+    <div class="demo-card" id="demo-card"></div>
+    <div class="demo-status" aria-live="polite">
+      <span class="pattern-name" id="demo-pattern">&nbsp;</span>
+      <span class="tally"><b id="demo-count">0</b> / <span id="demo-total"></span></span>
+    </div>
+  </section>
+
+  <footer>
+    Patterns from
+    <a href="https://github.com/simonw/tools/blob/main/llm-cliche-highlighter.html" target="_blank" rel="noreferrer">Simon Willison’s llm-cliche-highlighter</a>
+    and Wikipedia’s
+    <a href="https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing" target="_blank" rel="noreferrer">Signs of AI writing</a>.
+  </footer>
+</main>
+
+<script>
+  // ---- Theme toggle ----
+  document.getElementById('theme-toggle').addEventListener('click', () => {
+    const dark = document.documentElement.classList.toggle('dark');
+    try { localStorage.setItem('theme', dark ? 'dark' : 'light'); } catch (e) { /* ignore */ }
+  });
+
+  // ---- Looping demo (ported from demo.tsx / data.ts) ----
+  // Animation timing shared by the CSS keyframe delays and the JS counter.
+  const LEAD_MS = 600;    // pause before the first sweep
+  const STAGGER_MS = 620; // gap between consecutive sweeps
+  const HOLD_MS = 3400;   // dwell on the fully-marked text before looping
+
+  // The sample "AI-generated launch post" the demo sweeps through. Every
+  // `hit` label names a real pattern the bundled extension detects.
+  const DEMO_PARAGRAPHS = [
+    [
+      { text: 'In this guide, we ' },
+      { text: 'delve into', hit: 'AI vocabulary words' },
+      { text: ' the rewrite. It’s ' },
+      { text: 'not just an editor, but a philosophy', hit: '“Not just X, but Y”' },
+      { text: '. ' },
+      { text: 'No fluff, no filler, no jargon', hit: '“No X, no Y” chains' },
+      { text: '.' },
+    ],
+    [
+      { text: 'Community feedback ' },
+      { text: 'plays a pivotal role', hit: '“Plays a crucial role”' },
+      { text: ' in every release' },
+      { text: ', reflecting the appeal', hit: 'Participle sentence tails' },
+      { text: ' of a ' },
+      { text: 'seamless', hit: 'AI vocabulary words' },
+      { text: ' design. The steady adoption ' },
+      { text: 'stands as a testament', hit: '“Stands as a testament”' },
+      { text: ' to the team.' },
+    ],
+    [
+      { text: 'Here’s the kicker:', hit: '“Here’s the twist”' },
+      { text: ' nobody reads the changelog. ' },
+      { text: 'You already know', hit: '“You already know”' },
+      { text: ' the answer. ' },
+      { text: 'That’s not nothing.', hit: '“That’s not nothing”' },
+    ],
+  ];
+
+  const DEMO_HITS = DEMO_PARAGRAPHS.flat().filter(s => s.hit);
+  const LOOP_MS = LEAD_MS + DEMO_HITS.length * STAGGER_MS + HOLD_MS;
+
+  const card = document.getElementById('demo-card');
+  const patternEl = document.getElementById('demo-pattern');
+  const countEl = document.getElementById('demo-count');
+  document.getElementById('demo-total').textContent = String(DEMO_HITS.length);
+
+  // Rebuild the card's DOM from scratch each cycle — fresh <mark> elements
+  // restart the staggered CSS sweep (the equivalent of React's key remount).
+  function renderCard() {
+    card.textContent = '';
+    let index = 0;
+    for (const para of DEMO_PARAGRAPHS) {
+      const p = document.createElement('p');
+      for (const seg of para) {
+        if (seg.hit) {
+          const mark = document.createElement('mark');
+          mark.className = 'ch-mark';
+          mark.title = seg.hit;
+          mark.style.setProperty('--i', String(index++));
+          mark.textContent = seg.text;
+          p.append(mark);
+        } else {
+          p.append(document.createTextNode(seg.text));
+        }
+      }
+      card.append(p);
+    }
+  }
+
+  function setCount(count) {
+    countEl.textContent = String(count);
+    patternEl.innerHTML = count > 0 ? '' : '&nbsp;';
+    if (count > 0) patternEl.textContent = DEMO_HITS[count - 1].hit;
+  }
+
+  // The sweep itself is pure CSS (staggered animation-delay); JS only ticks
+  // the counter in step and restarts the loop.
+  function runCycle() {
+    renderCard();
+    let count = 0;
+    setCount(0);
+    let interval;
+    // First tick lands as the first sweep finishes, then one per stagger.
+    const start = setTimeout(() => {
+      count = 1;
+      setCount(count);
+      interval = setInterval(() => {
+        count = Math.min(count + 1, DEMO_HITS.length);
+        setCount(count);
+      }, STAGGER_MS);
+    }, LEAD_MS + 400);
+    setTimeout(() => {
+      clearTimeout(start);
+      if (interval !== undefined) clearInterval(interval);
+      runCycle();
+    }, LOOP_MS);
+  }
+
+  runCycle();
+</script>
+</body>
+</html>
