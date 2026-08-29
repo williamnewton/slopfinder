@@ -365,11 +365,16 @@
     }
   }
 
+  let popAnimation;
   function setCount(count) {
     countEl.textContent = String(count);
     countEl.classList.toggle('visible', count > 0);
+    // Replace any in-flight pop instead of stacking a new one on top —
+    // stacked pops can pin the badge at scale(1.2) in throttled tabs.
+    if (popAnimation) popAnimation.cancel();
+    popAnimation = undefined;
     if (count > 0 && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      countEl.animate(
+      popAnimation = countEl.animate(
         [{ transform: 'scale(1.2)' }, { transform: 'scale(1)' }],
         { duration: 180, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' }
       );
@@ -388,8 +393,11 @@
       count = 1;
       setCount(count);
       interval = setInterval(() => {
-        count = Math.min(count + 1, DEMO_HITS.length);
+        count += 1;
         setCount(count);
+        // Done counting — stop, so the badge doesn't keep pulsing
+        // through the hold phase.
+        if (count >= DEMO_HITS.length) clearInterval(interval);
       }, STAGGER_MS);
     }, LEAD_MS + 400);
     setTimeout(() => {
