@@ -30,6 +30,10 @@ now independent — changes here do not sync back.
    New patterns need a spec entry + a test.
 7. **`site/downloads/` and `dist/` are build outputs** (gitignored). CI
    rebuilds them; never commit zips.
+8. **`HOW_IT_WORKS.md` is the behavior contract.** Update it in the same
+   commit as any change to scan timing, matching semantics, painting,
+   counting, popup behavior, or the site's demo — anything off-spec there
+   is treated as a bug.
 
 ## Gotchas
 
