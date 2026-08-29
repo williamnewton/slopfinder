@@ -70,11 +70,6 @@ check(result.ok, `default patterns validate (${result.ok ? result.count : result
 // ---- site ↔ extension consistency ----------------------------------------
 
 const siteHtml = readFileSync(join(SITE_DIR, 'index.html'), 'utf8');
-const claimed = siteHtml.match(/id="pattern-count">(\d+)</)?.[1];
-check(
-  Number(claimed) === engine.DEFAULT_PATTERNS.length,
-  `site pattern count (${claimed}) matches DEFAULT_PATTERNS (${engine.DEFAULT_PATTERNS.length})`
-);
 check(
   siteHtml.includes(`downloads/${ZIP_NAME}`),
   `site download CTA points at downloads/${ZIP_NAME}`

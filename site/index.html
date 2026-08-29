@@ -144,14 +144,16 @@
     letter-spacing: -0.025em;
   }
   @media (min-width: 640px) { h1 { font-size: 3rem; } }
+  /* The marked phrase always starts its own line so the highlight never
+     wraps mid-sweep. */
   .hero-break { display: block; }
-  @media (min-width: 640px) { .hero-break { display: inline; } }
   .hero-sub {
     margin: 1.25rem 0 0;
     max-width: 36rem;
     font-size: 1.125rem;
     line-height: 1.75rem;
     color: var(--muted-foreground);
+    text-wrap: balance;
   }
   .ctas {
     margin-top: 2rem;
@@ -202,27 +204,34 @@
   @media (min-width: 640px) { .demo-card { padding: 1.75rem; } }
   .demo-card p { margin: 0; }
   .demo-card p + p { margin-top: 1rem; }
+  /* Found-count badge: brand yellow, sits left under the card, upticks as
+     the sweep lands on each cliché — same idea as the extension's toolbar
+     badge. Hidden (but space reserved) while the count is zero. */
   .demo-status {
-    margin-top: 0.5rem;
+    margin-top: 0.75rem;
     display: flex;
-    height: 1.25rem;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 1rem;
+    justify-content: flex-start;
+  }
+  .demo-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.75rem;
+    height: 1.75rem;
+    padding: 0 0.5rem;
+    border-radius: 9999px;
+    background: #fcd34d;
+    color: #1d1b17;
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    font-size: 0.75rem;
-    color: var(--muted-foreground);
-  }
-  .demo-status .pattern-name {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .demo-status .tally {
-    flex-shrink: 0;
+    font-size: 0.8125rem;
+    font-weight: 700;
     font-variant-numeric: tabular-nums;
+    visibility: hidden;
   }
-  .demo-status .tally b { font-weight: 600; color: var(--foreground); }
+  .demo-badge.visible { visibility: visible; }
+  @media (prefers-reduced-motion: reduce) {
+    .demo-badge { visibility: visible; }
+  }
 
   footer {
     margin-top: 4rem;
@@ -252,8 +261,8 @@
       <span class="hero-break"><mark class="ch-mark" style="--i: 0">caught in the act</mark>.</span>
     </h1>
     <p class="hero-sub">
-      A Chrome extension that highlights the tells of LLM prose on any page
-      you read. <span id="pattern-count">38</span> patterns. No network calls.
+      A Chrome extension that highlights tells of LLM prose on any page
+      you read. Fast, local, fun.
     </p>
     <div class="ctas">
       <a class="cta cta-primary" href="downloads/slopfinder-extension.zip" download>
@@ -269,9 +278,8 @@
 
   <section class="demo" aria-label="Demo">
     <div class="demo-card" id="demo-card"></div>
-    <div class="demo-status" aria-live="polite">
-      <span class="pattern-name" id="demo-pattern">&nbsp;</span>
-      <span class="tally"><b id="demo-count">0</b> / <span id="demo-total"></span></span>
+    <div class="demo-status">
+      <span class="demo-badge" id="demo-count" aria-live="polite" aria-label="clichés found">0</span>
     </div>
   </section>
 
@@ -332,9 +340,7 @@
   const LOOP_MS = LEAD_MS + DEMO_HITS.length * STAGGER_MS + HOLD_MS;
 
   const card = document.getElementById('demo-card');
-  const patternEl = document.getElementById('demo-pattern');
   const countEl = document.getElementById('demo-count');
-  document.getElementById('demo-total').textContent = String(DEMO_HITS.length);
 
   // Rebuild the card's DOM from scratch each cycle — fresh <mark> elements
   // restart the staggered CSS sweep (the equivalent of React's key remount).
@@ -361,8 +367,13 @@
 
   function setCount(count) {
     countEl.textContent = String(count);
-    patternEl.innerHTML = count > 0 ? '' : '&nbsp;';
-    if (count > 0) patternEl.textContent = DEMO_HITS[count - 1].hit;
+    countEl.classList.toggle('visible', count > 0);
+    if (count > 0 && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      countEl.animate(
+        [{ transform: 'scale(1.2)' }, { transform: 'scale(1)' }],
+        { duration: 180, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' }
+      );
+    }
   }
 
   // The sweep itself is pure CSS (staggered animation-delay); JS only ticks

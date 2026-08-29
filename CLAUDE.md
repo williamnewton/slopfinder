@@ -20,11 +20,10 @@ now independent — changes here do not sync back.
 4. **The privacy promise is load-bearing**: `storage` is the only permission,
    there are no host permissions, and nothing makes network requests. The
    landing page and Web Store listing say so. `npm run check` enforces it.
-5. **Site and extension must not drift.** The hero's pattern count
-   (`id="pattern-count"`) must equal `DEFAULT_PATTERNS.length`, and every
-   cliché the demo animates must be caught by the shipped engine under the
-   displayed pattern name (`tests/patterns.test.mjs` "demo honesty" tests —
-   update them when editing the demo copy in `site/index.html`).
+5. **Site and extension must not drift.** Every cliché the demo animates
+   must be caught by the shipped engine under the pattern name in the mark's
+   `title` (`tests/patterns.test.mjs` "demo honesty" tests — update them
+   when editing the demo copy in `site/index.html`).
 6. **`patterns.js` patterns are data, not code**: JSON-serializable specs
    (regex source + flags strings; typed heuristic entries). The popup
    exports/imports exactly this spec and `validatePatterns` gate-checks it.
