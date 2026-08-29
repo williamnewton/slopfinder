@@ -399,7 +399,10 @@
   ];
 
   const DEMO_HITS = DEMO_PARAGRAPHS.flat().filter(s => s.hit);
-  const LOOP_MS = LEAD_MS + DEMO_HITS.length * STAGGER_MS + HOLD_MS;
+  // The hero's mark owns sweep slot 0; the demo starts one stagger later so
+  // the two never light up at the same time.
+  const DEMO_OFFSET = 1;
+  const LOOP_MS = LEAD_MS + (DEMO_HITS.length + DEMO_OFFSET) * STAGGER_MS + HOLD_MS;
 
   const card = document.getElementById('demo-card');
   const countEl = document.getElementById('demo-count');
@@ -408,7 +411,7 @@
   // restart the staggered CSS sweep (the equivalent of React's key remount).
   function renderCard() {
     card.textContent = '';
-    let index = 0;
+    let index = DEMO_OFFSET;
     for (const para of DEMO_PARAGRAPHS) {
       const p = document.createElement('p');
       for (const seg of para) {
@@ -461,7 +464,7 @@
         // through the hold phase.
         if (count >= DEMO_HITS.length) clearInterval(interval);
       }, STAGGER_MS);
-    }, LEAD_MS + 400);
+    }, LEAD_MS + DEMO_OFFSET * STAGGER_MS + 400);
     setTimeout(() => {
       clearTimeout(start);
       if (interval !== undefined) clearInterval(interval);
