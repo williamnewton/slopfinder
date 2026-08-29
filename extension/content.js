@@ -26,6 +26,7 @@
     'DETAILS', 'SUMMARY', 'BODY'
   ]);
   const RESCAN_DEBOUNCE_MS = 1500;
+  const RESCAN_MAX_WAIT_MS = 5000;
 
   const state = { enabled: true, compiled: null, results: null };
   self.__llmClicheContent = state;
@@ -187,11 +188,26 @@
   // Late-rendering pages (SPAs, infinite scroll): re-scan after DOM mutations
   // settle. The Highlight API adds no DOM nodes, so our own work never
   // re-triggers the observer (the style element is injected once, pre-scan).
+  //
+  // The debounce alone starves on pages that mutate continuously (feeds with
+  // live counters, virtualized scrolling — e.g. LinkedIn), because the timer
+  // keeps resetting and the settle never comes. The max-wait timer guarantees
+  // a scan at least every RESCAN_MAX_WAIT_MS while mutations keep arriving.
   let rescanTimer;
+  let maxWaitTimer;
+  function runScheduledScan() {
+    clearTimeout(rescanTimer);
+    clearTimeout(maxWaitTimer);
+    rescanTimer = maxWaitTimer = undefined;
+    if (state.enabled && state.compiled) scan();
+  }
   const observer = new MutationObserver(() => {
     if (!state.enabled || !state.compiled) return;
     clearTimeout(rescanTimer);
-    rescanTimer = setTimeout(scan, RESCAN_DEBOUNCE_MS);
+    rescanTimer = setTimeout(runScheduledScan, RESCAN_DEBOUNCE_MS);
+    if (maxWaitTimer === undefined) {
+      maxWaitTimer = setTimeout(runScheduledScan, RESCAN_MAX_WAIT_MS);
+    }
   });
   if (document.body) {
     injectStyles();

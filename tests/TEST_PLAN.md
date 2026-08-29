@@ -50,7 +50,11 @@ Good fixtures: any LLM-written blog post, Wikipedia's
       counts as you switch
 - [ ] Clean page (e.g. a raw GitHub README of terse docs) → no badge
 - [ ] SPA / late content: on a client-rendered page, highlights appear
-      within ~2s of content rendering (MutationObserver rescan)
+      within ~2s of content settling (MutationObserver rescan)
+- [ ] Continuously-mutating page (LinkedIn/X feed — live counters,
+      virtualized scroll): highlights and count still update within ~5s
+      of new content, even though the DOM never goes quiet (max-wait
+      rescan; a plain debounce starves here)
 
 ## 4. Popup controls
 
