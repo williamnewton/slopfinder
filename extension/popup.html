@@ -18,6 +18,8 @@
     gap: 8px;
     padding: 14px 16px;
   }
+  .brand { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .brand img { flex-shrink: 0; }
   h1 { margin: 0; font-size: 15px; }
   h1 mark { background: #fcd34d; color: #1d1b17; border-radius: 3px; padding: 0 4px; }
   .row {
@@ -65,7 +67,10 @@
 </head>
 <body>
   <header>
-    <h1>LLM cliché <mark>highlighter</mark></h1>
+    <div class="brand">
+      <img src="icons/icon48.png" alt="" width="22" height="22">
+      <h1>LLM cliché <mark>highlighter</mark></h1>
+    </div>
     <span class="count" id="page-count">–</span>
   </header>
   <div class="row">
