@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Slop Finder mark: a highlighter pill with two swept quote strokes. -->
+  <rect x="10" y="52" width="108" height="46" rx="10" fill="#fcd34d"/>
+  <path d="M40 24 L58 24 L50 90 L32 90 Z" fill="#1d1b17"/>
+  <path d="M74 24 L92 24 L84 90 L66 90 Z" fill="#1d1b17"/>
+</svg>

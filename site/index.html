@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cliché Highlighter — every AI cliché, caught in the act</title>
 <meta name="description" content="A Chrome extension that highlights the tells of LLM prose on any page you read. No network calls.">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
 <script>
   // Apply the theme before first paint so there's no flash. Stored choice
   // wins; the site is dark by default (matching the source prototype).
@@ -235,9 +236,8 @@
     text-overflow: ellipsis;
   }
   .address svg { width: 0.7rem; height: 0.7rem; flex-shrink: 0; }
-  /* Extension icon slot, top right — swap the placeholder tile for the real
-     logo (an <img>) when it exists. The count badge pins to its corner like
-     Chrome's toolbar badge. */
+  /* Extension icon slot, top right — the count badge pins to its corner
+     like Chrome's toolbar badge. */
   .ext-icon {
     position: relative;
     flex-shrink: 0;
@@ -247,20 +247,11 @@
     align-items: center;
     justify-content: center;
   }
-  .ext-tile {
+  .ext-logo {
     width: 1.5rem;
     height: 1.5rem;
-    border-radius: 0.375rem;
-    background: #1d1b17;
-    border: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 0.16rem;
-    padding: 0 0.28rem;
+    display: block;
   }
-  .ext-tile i { height: 0.14rem; border-radius: 999px; background: #6e6a62; }
-  .ext-tile i:nth-child(2) { background: #fcd34d; }
   .demo-card {
     padding: 1.25rem;
     line-height: 1.625;
@@ -346,9 +337,7 @@
           ai-startup.example/launch-post
         </span>
         <span class="ext-icon">
-          <!-- Placeholder extension icon — replace .ext-tile with the real
-               logo <img> when it exists. -->
-          <span class="ext-tile" aria-hidden="true"><i></i><i></i><i></i></span>
+          <img class="ext-logo" src="logo.svg" alt="" aria-hidden="true">
           <span class="demo-badge" id="demo-count" aria-live="polite" aria-label="clichés found">0</span>
         </span>
       </div>
