@@ -195,6 +195,15 @@
     font-weight: 600;
     transition: opacity 0.15s;
   }
+  .cta-chip {
+    background: #fcd34d;
+    color: #1d1b17;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    padding: 0.1rem 0.45rem;
+    border-radius: 9999px;
+    white-space: nowrap;
+  }
   .cta-primary:hover { opacity: 0.9; }
   .cta-secondary {
     border: 1px solid var(--border);
@@ -333,7 +342,14 @@
       you read. Fast, local, fun.
     </p>
     <div class="ctas">
-      <a class="cta cta-primary" href="downloads/slopfinder-extension.zip" download>
+      <!-- Temporary preview link — swap for the public store URL and drop
+           the "coming soon" chip once the listing is live. -->
+      <a class="cta cta-primary" href="https://chromewebstore.google.com/detail/mkgdglaifmndcicghpnkkdmjafepiibc/preview?hl=en&authuser=0" target="_blank" rel="noreferrer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="21.17" x2="12" y1="8" y2="8"/><line x1="3.95" x2="8.54" y1="6.06" y2="14"/><line x1="10.88" x2="15.46" y1="21.94" y2="14"/></svg>
+        Chrome Web Store
+        <span class="cta-chip">coming soon</span>
+      </a>
+      <a class="cta cta-secondary" href="downloads/slopfinder-extension.zip" download>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
         Download
       </a>

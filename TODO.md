@@ -36,8 +36,9 @@ zip; swap CTAs to the store listing once approved.
       you read"; justify `storage` (user settings/patterns only); declare
       **no data collected, no remote code** — this keeps review simple
 - [ ] Visibility: Public → Submit for review
-- [ ] After approval: swap the site's Download CTA to the store URL (keep
-      the zip as a fallback link)
+- [ ] After approval: on the site's Chrome Web Store button, swap the
+      temporary preview URL for the public listing URL and remove the
+      "coming soon" chip (the zip Download button stays as fallback)
 
 ## 3. Light marketing (this afternoon, ≈1 hr)
 
