@@ -4,12 +4,21 @@
 <meta charset="utf-8">
 <style>
   :root { color-scheme: dark; }
+  /* The popup window itself can't be transparent, so the rounded look comes
+     from an inner panel on a darker ground. */
   body {
     width: 300px;
     margin: 0;
-    background: #16140f;
+    padding: 8px;
+    background: #0d0c0a;
     color: #f5f2ea;
     font: 14px/1.5 system-ui, sans-serif;
+  }
+  .panel {
+    background: #16140f;
+    border: 1px solid #2a2620;
+    border-radius: 14px;
+    overflow: hidden;
   }
   header {
     display: flex;
@@ -18,8 +27,6 @@
     gap: 8px;
     padding: 14px 16px;
   }
-  .brand { display: flex; align-items: center; gap: 8px; min-width: 0; }
-  .brand img { flex-shrink: 0; }
   h1 { margin: 0; font-size: 15px; }
   h1 mark { background: #fcd34d; color: #1d1b17; border-radius: 3px; padding: 0 4px; }
   .row {
@@ -47,18 +54,49 @@
   }
   .switch input:checked + .knob { background: #fcd34d; }
   .switch input:checked + .knob::before { transform: translateX(18px); background: #1d1b17; }
-  .actions { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid #211e18; }
+  /* expandable pattern list */
+  details.patterns summary {
+    list-style: none;
+    cursor: pointer;
+  }
+  details.patterns summary::-webkit-details-marker { display: none; }
+  .chev {
+    color: #a29b8d;
+    font-size: 11px;
+    transition: transform 0.15s;
+    flex-shrink: 0;
+  }
+  details.patterns[open] .chev { transform: rotate(90deg); }
+  #pattern-list {
+    margin: 0;
+    padding: 2px 16px 12px 32px;
+    max-height: 176px;
+    overflow-y: auto;
+    font-size: 12px;
+    color: #a29b8d;
+  }
+  #pattern-list li { margin: 3px 0; }
+  #pattern-list li::marker { color: #fcd34d; }
+  /* actions */
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 16px;
+    border-top: 1px dotted #4a4438;
+  }
   button {
     flex: 1;
-    padding: 7px 8px;
+    padding: 6px 8px;
     border: 1px solid #3a362e;
     border-radius: 8px;
     background: #211e18;
     color: #f5f2ea;
-    font: 600 12.5px system-ui, sans-serif;
+    font: 600 11.5px system-ui, sans-serif;
     cursor: pointer;
   }
   button:hover { filter: brightness(1.15); }
+  #reset { flex-basis: 100%; }
   #status { margin: 0; padding: 0 16px 10px; color: #a29b8d; font-size: 11.5px; min-height: 16px; }
   #status.error { color: #fca5a5; }
   footer { padding: 8px 16px 12px; border-top: 1px solid #211e18; font-size: 11px; color: #6e6a62; }
@@ -66,41 +104,44 @@
 </style>
 </head>
 <body>
-  <header>
-    <div class="brand">
-      <img src="icons/icon48.png" alt="" width="22" height="22">
+  <div class="panel">
+    <header>
       <h1>Slop <mark>Finder</mark></h1>
+      <span class="count" id="page-count">–</span>
+    </header>
+    <div class="row">
+      <div>
+        <div class="row-label">Auto-highlight</div>
+        <div class="row-sub">Runs on every page as it loads</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="enabled">
+        <span class="knob"></span>
+      </label>
     </div>
-    <span class="count" id="page-count">–</span>
-  </header>
-  <div class="row">
-    <div>
-      <div class="row-label">Auto-highlight</div>
-      <div class="row-sub">Runs on every page as it loads · on by default</div>
+    <details class="patterns">
+      <summary class="row">
+        <div>
+          <div class="row-label">Patterns</div>
+          <div class="row-sub" id="pattern-count"></div>
+        </div>
+        <span class="chev" aria-hidden="true">▶</span>
+      </summary>
+      <ul id="pattern-list"></ul>
+    </details>
+    <div class="actions">
+      <button id="download" type="button">Download JSON</button>
+      <button id="upload" type="button">Upload JSON</button>
+      <button id="reset" type="button">Reset to defaults</button>
     </div>
-    <label class="switch">
-      <input type="checkbox" id="enabled">
-      <span class="knob"></span>
-    </label>
+    <p id="status"></p>
+    <input type="file" id="file" accept=".json,application/json" hidden>
+    <footer>
+      Patterns adapted from
+      <a href="https://github.com/simonw/tools/blob/main/llm-cliche-highlighter.html" target="_blank" rel="noreferrer">Simon Willison's LLM cliché highlighter</a>.
+      Runs locally; no network requests.
+    </footer>
   </div>
-  <div class="row">
-    <div>
-      <div class="row-label">Patterns</div>
-      <div class="row-sub" id="pattern-count"></div>
-    </div>
-  </div>
-  <div class="actions">
-    <button id="download" type="button">Download JSON</button>
-    <button id="upload" type="button">Upload JSON</button>
-    <button id="reset" type="button">Reset</button>
-  </div>
-  <p id="status"></p>
-  <input type="file" id="file" accept=".json,application/json" hidden>
-  <footer>
-    Patterns adapted from
-    <a href="https://github.com/simonw/tools/blob/main/llm-cliche-highlighter.html" target="_blank" rel="noreferrer">Simon Willison's LLM cliché highlighter</a>.
-    Runs locally; no network requests.
-  </footer>
   <script src="patterns.js"></script>
   <script src="popup.js"></script>
 </body>

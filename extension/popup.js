@@ -24,6 +24,14 @@ async function getPatterns() {
 async function refreshPatternCount() {
   const patterns = await getPatterns();
   patternCountEl.textContent = `${patterns.length} loaded`;
+  const list = document.getElementById('pattern-list');
+  list.textContent = '';
+  for (const p of patterns) {
+    const li = document.createElement('li');
+    li.textContent = p.name;
+    if (p.description) li.title = p.description;
+    list.append(li);
+  }
 }
 
 async function refreshPageCount() {

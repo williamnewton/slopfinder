@@ -101,10 +101,14 @@ for your reading.
 
 ## Popup (`popup.html` / `popup.js`)
 
-Logo + title, this-page count, on/off toggle (storage-backed, applied live
-by every tab), and pattern management: Download JSON (exports the active
-spec), Upload JSON (parse → `validatePatterns` → store; errors shown inline,
-invalid sets never stored), Reset (restores defaults).
+A rounded panel (inner container — the popup window itself can't be
+transparent): title, this-page count, on/off toggle (storage-backed,
+applied live by every tab), an expandable **Patterns** row (`<details>`)
+that lists the active pattern names as a scrollable bullet list with
+descriptions on hover, and — under a dotted divider — pattern management:
+Download JSON (exports the active spec), Upload JSON (parse →
+`validatePatterns` → store; errors shown inline, invalid sets never
+stored), Reset to defaults.
 
 ## Background worker (`background.js`)
 
