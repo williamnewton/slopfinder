@@ -37,10 +37,9 @@ wall-to-wall cliché, so it makes a good fixture: expect ≥ 8 matches.
 
 ## 3. Highlighting on real pages
 
-Good fixtures: any LLM-written blog post, Wikipedia's
-[Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing)
-(meta: it quotes the clichés it documents), and the landing page itself
-(`npm run serve` → http://localhost:4600 — the demo card is bait).
+Good fixtures: the verified pages in `docs/EXAMPLES.md` (engine-scored,
+with expected counts and a human-written control), plus the landing page
+itself (`npm run serve` → http://localhost:4600 — the demo card is bait).
 
 - [ ] Exact matches paint solid yellow; their whole sentence paints pale
 - [ ] Page text/layout unchanged (highlight API only — no DOM mutation:
