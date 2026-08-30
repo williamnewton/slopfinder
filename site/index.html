@@ -113,11 +113,8 @@
     }
   }
 
-  /* ---- Theme toggle ---- */
+  /* ---- Theme toggle (inline with the wordmark row) ---- */
   .theme-toggle {
-    position: absolute;
-    right: 1rem;
-    top: 1rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -130,20 +127,26 @@
     cursor: pointer;
     transition: color 0.15s;
     padding: 0;
+    flex-shrink: 0;
   }
   .theme-toggle:hover { color: var(--foreground); }
-  @media (min-width: 640px) { .theme-toggle { right: 1.5rem; top: 1.5rem; } }
   .theme-toggle svg { width: 1rem; height: 1rem; }
   .theme-toggle .icon-sun { display: none; }
   .dark .theme-toggle .icon-sun { display: block; }
   .dark .theme-toggle .icon-moon { display: none; }
 
   /* ---- Hero ---- */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
   .wordmark {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin-bottom: 1.25rem;
     font-size: 0.9375rem;
     font-weight: 600;
     letter-spacing: -0.01em;
@@ -297,10 +300,8 @@
 
   footer {
     margin-top: 4rem;
-    border-top: 1px solid var(--border);
-    padding-top: 1rem;
     font-size: 0.75rem;
-    line-height: 1rem;
+    line-height: 1.4;
     color: var(--muted-foreground);
   }
   footer a {
@@ -312,15 +313,16 @@
 </head>
 <body>
 <main>
-  <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
-    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
-  </button>
-
   <header>
-    <div class="wordmark">
-      <img src="logo.svg" alt="">
-      Slop Finder
+    <div class="topbar">
+      <div class="wordmark">
+        <img src="logo.svg" alt="">
+        Slop Finder
+      </div>
+      <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+      </button>
     </div>
     <h1>
       Every AI cliché,
@@ -364,6 +366,8 @@
     <a href="https://github.com/simonw/tools/blob/main/llm-cliche-highlighter.html" target="_blank" rel="noreferrer">Simon Willison’s llm-cliche-highlighter</a>
     and Wikipedia’s
     <a href="https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing" target="_blank" rel="noreferrer">Signs of AI writing</a>.
+    Extension by
+    <a href="https://willnewton.dev" target="_blank" rel="noreferrer">Will Newton</a>.
   </footer>
 </main>
 
