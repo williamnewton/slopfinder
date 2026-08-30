@@ -23,7 +23,7 @@ edit; getting flagged by your own tool in the replies is the failure mode.
 >
 > Detection patterns adapted from Simon Willison's LLM cliché highlighter.
 >
-> Try it: [PAGES_URL]
+> Try it: https://williamnewton.github.io/slopfinder/
 
 (Attach the feed clip. Yes, quoting example clichés in the post would get
 them highlighted by the extension — that's the joke working, but the draft
@@ -39,7 +39,7 @@ clean.)
 >
 > [clip]
 >
-> [PAGES_URL] — on the Chrome Web Store soon; the zip on the site works
+> https://williamnewton.github.io/slopfinder/ — on the Chrome Web Store soon; the zip on the site works
 > today.
 
 ## Credit ping to Simon Willison (email or DM, before the posts go up)
@@ -49,7 +49,7 @@ clean.)
 > the CSS Highlight API, and counts them on a per-tab badge. Your pattern
 > set does all the real work and you're credited on the site, in the popup,
 > and in the README. Code: https://github.com/williamnewton/slopfinder ·
-> demo: [PAGES_URL]. Wanted you to see it first — and thanks for the
+> demo: https://williamnewton.github.io/slopfinder/. Wanted you to see it first — and thanks for the
 > patterns.
 
 ## Show HN (HOLD until the Web Store listing is approved)

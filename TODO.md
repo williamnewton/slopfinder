@@ -6,19 +6,19 @@ zip; swap CTAs to the store listing once approved.
 
 ## 0. Decide once (blocks everything below)
 
-- [ ] **Name**: ship as "Slop Finder" or keep "LLM Cliché Highlighter"?
+- [x] **Name**: ship as "Slop Finder" or keep "LLM Cliché Highlighter"?
       The store listing name is hard to change cheaply later. If rebranding:
       manifest `name`/`description`, popup header, site title/copy, README.
-- [ ] **Version**: bump for the first public release — `npm run bump -- 1.0.0`
+- [x] **Version**: bump for the first public release — `npm run bump -- 1.0.0`
 
 ## 1. Make it public (≈15 min)
 
-- [ ] Create the GitHub repo (`gh repo create slopfinder --public`), push `main`
-- [ ] Repo Settings → Pages → Source: **GitHub Actions** (deploy workflow is
+- [x] Create the GitHub repo (`gh repo create slopfinder --public`), push `main`
+- [x] Repo Settings → Pages → Source: **GitHub Actions** (deploy workflow is
       already in the repo) → site goes live with the zip download
-- [ ] Point the site's GitHub CTA at this repo (it currently links to Simon
+- [x] Point the site's GitHub CTA at this repo (it currently links to Simon
       Willison's upstream tool; keep his credit in the footer)
-- [ ] Tag `v<version>` → release workflow attaches the zip
+- [x] Tag `v<version>` → release workflow attaches the zip
 - [ ] Sanity-pass the live Pages URL on phone + desktop
 
 ## 2. Chrome Web Store submission (≈45 min)
