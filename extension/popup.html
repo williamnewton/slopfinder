@@ -4,21 +4,12 @@
 <meta charset="utf-8">
 <style>
   :root { color-scheme: dark; }
-  /* The popup window itself can't be transparent, so the rounded look comes
-     from an inner panel on a darker ground. */
   body {
     width: 300px;
     margin: 0;
-    padding: 8px;
-    background: #0d0c0a;
+    background: #16140f;
     color: #f5f2ea;
     font: 14px/1.5 system-ui, sans-serif;
-  }
-  .panel {
-    background: #16140f;
-    border: 1px solid #2a2620;
-    border-radius: 14px;
-    overflow: hidden;
   }
   header {
     display: flex;
@@ -106,7 +97,6 @@
 </style>
 </head>
 <body>
-  <div class="panel">
     <header>
       <h1>Slop <mark>Finder</mark></h1>
       <div class="count-wrap">
@@ -146,7 +136,6 @@
       <a href="https://github.com/simonw/tools/blob/main/llm-cliche-highlighter.html" target="_blank" rel="noreferrer">Simon Willison's LLM cliché highlighter</a>.
       Runs locally; no network requests.
     </footer>
-  </div>
   <script src="patterns.js"></script>
   <script src="popup.js"></script>
 </body>
