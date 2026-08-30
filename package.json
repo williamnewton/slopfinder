@@ -1,8 +1,8 @@
 {
   "name": "slopfinder",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "private": true,
-  "description": "LLM Cliché Highlighter — Chrome extension + landing site. Highlights the tells of AI-generated prose.",
+  "description": "Slop Finder — Chrome extension + landing site. Highlights the tells of AI-generated prose.",
   "type": "module",
   "scripts": {
     "check": "node scripts/check.mjs",

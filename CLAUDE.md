@@ -1,10 +1,14 @@
 # CLAUDE.md
 
-Slop Finder = the **LLM Cliché Highlighter** Chrome extension (`extension/`)
-plus its static landing site (`site/index.html`), with a zero-dependency Node
-workstation (`scripts/`, `tests/`). Ported from the `cliche-highlighter`
-prototype in the `nextjs-prototypes` repo; that prototype and this repo are
-now independent — changes here do not sync back.
+**Slop Finder** is a Chrome extension (`extension/`) that highlights the
+tells of AI-generated prose, plus its static landing site
+(`site/index.html`), with a zero-dependency Node workstation (`scripts/`,
+`tests/`). Ported from the `cliche-highlighter` prototype in the
+`nextjs-prototypes` repo (where it was branded "LLM Cliché Highlighter");
+that prototype and this repo are now independent — changes here do not sync
+back. Detection patterns remain adapted from Simon Willison's LLM cliché
+highlighter and he stays credited in the site footer, popup footer, and
+README.
 
 ## Rules
 

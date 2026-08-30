@@ -1,8 +1,8 @@
 # Slop Finder
 
-**LLM Cliché Highlighter** — a Chrome extension that highlights the tells of
-AI-generated prose ("delve", "not just X, but Y", "stands as a testament", …)
-on any page you read, plus the static landing site that distributes it.
+A Chrome extension that highlights the tells of AI-generated prose
+("delve", "not just X, but Y", "stands as a testament", …) on any page you
+read, plus the static landing site that distributes it.
 
 Ported from the `cliche-highlighter` prototype in `nextjs-prototypes` into a
 standalone repo with its own build/test/deploy workstation. Detection

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "LLM Cliché Highlighter",
-  "version": "0.2.0",
-  "description": "Automatically highlights the tells of AI-generated prose and counts them on the toolbar icon. Patterns adapted from Simon Willison's LLM cliché highlighter.",
+  "name": "Slop Finder",
+  "version": "1.0.0",
+  "description": "Highlights the tells of AI-generated prose on every page you read. Runs locally — no network requests, no data collected.",
   "permissions": ["storage"],
   "background": {
     "service_worker": "background.js"
@@ -16,7 +16,7 @@
   ],
   "action": {
     "default_popup": "popup.html",
-    "default_title": "LLM Cliché Highlighter",
+    "default_title": "Slop Finder",
     "default_icon": {
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",
