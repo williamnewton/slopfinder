@@ -58,6 +58,14 @@ Open source: https://github.com/williamnewton/slopfinder
 - **Permission justification — storage**: Stores the user's on/off
   preference and optional custom pattern list locally. Nothing leaves the
   browser.
+- **Host permission justification** (the console asks because the content
+  script matches `http://*/*` and `https://*/*` — this is the product's
+  single feature, not an extra grant): The extension's sole purpose is to
+  automatically highlight AI-cliché phrases on pages as the user reads
+  them, so its content script must run on all http/https pages. The script
+  only reads page text locally and paints matches with the CSS Custom
+  Highlight API. It never modifies page content, injects no remote code,
+  makes no network requests, and collects or transmits no data.
 - **Data usage disclosures**: collects no user data (check "no" on every
   category). No remote code.
 
