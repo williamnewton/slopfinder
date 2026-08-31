@@ -73,8 +73,11 @@
      clone gives each line fragment its own sweep). Delays are driven by a
      per-mark --i index. Highlighter yellow is the brand color — identical in
      light and dark mode, with fixed dark ink text. */
+  /* Values dialed with the slop-sweep-jig prototype (nextjs-prototypes):
+     lead 400ms · stagger 420ms · sweep 520ms ease-in-out · hold 3000ms ·
+     mark radius 0.28em · mark pad 0.15em/0.08em · card 18px/1.8/40px. */
   .ch-mark {
-    --ch-delay: calc(600ms + var(--i, 0) * 620ms);
+    --ch-delay: calc(400ms + var(--i, 0) * 420ms);
     --ch-yellow: #fcd34d;
     --ch-ink: #1d1b17;
     background-color: transparent;
@@ -83,14 +86,14 @@
     background-repeat: no-repeat;
     background-size: 0% 100%;
     background-position: 0 0;
-    border-radius: 0.2em;
-    padding: 0.08em 0.18em;
-    margin: -0.08em -0.18em;
+    border-radius: 0.28em;
+    padding: 0.15em 0.08em;
+    margin: -0.15em -0.08em;
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
     animation:
-      ch-sweep 520ms cubic-bezier(0.16, 1, 0.3, 1) both,
-      ch-ink 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+      ch-sweep 520ms ease-in-out both,
+      ch-ink 520ms ease-in-out both;
     animation-delay: var(--ch-delay);
   }
   @keyframes ch-sweep {
@@ -275,10 +278,11 @@
     display: block;
   }
   .demo-card {
-    padding: 1.25rem;
-    line-height: 1.625;
+    padding: 1.75rem;
+    font-size: 1.125rem;
+    line-height: 1.8;
   }
-  @media (min-width: 640px) { .demo-card { padding: 1.75rem; } }
+  @media (min-width: 640px) { .demo-card { padding: 40px; } }
   .demo-card p { margin: 0; }
   .demo-card p + p { margin-top: 1rem; }
   /* Found-count badge: upticks as the sweep lands on each cliché — same
@@ -396,9 +400,9 @@
 
   // ---- Looping demo (ported from demo.tsx / data.ts) ----
   // Animation timing shared by the CSS keyframe delays and the JS counter.
-  const LEAD_MS = 600;    // pause before the first sweep
-  const STAGGER_MS = 620; // gap between consecutive sweeps
-  const HOLD_MS = 3400;   // dwell on the fully-marked text before looping
+  const LEAD_MS = 400;    // pause before the first sweep
+  const STAGGER_MS = 420; // gap between consecutive sweeps
+  const HOLD_MS = 3000;   // dwell on the fully-marked text before looping
 
   // The sample "AI-generated launch post" the demo sweeps through. Every
   // `hit` label names a real pattern the bundled extension detects.
