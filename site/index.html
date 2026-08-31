@@ -78,9 +78,6 @@
     --ch-yellow: #fcd34d;
     --ch-ink: #1d1b17;
     background-color: transparent;
-    /* ch-hold pins the inherited text color until the sweep lands, then
-       expires, leaving the declared ink (see source prototype for why a
-       color animation with fill-forwards is not usable here). */
     color: var(--ch-ink);
     background-image: linear-gradient(var(--ch-yellow), var(--ch-yellow));
     background-repeat: no-repeat;
@@ -93,17 +90,20 @@
     box-decoration-break: clone;
     animation:
       ch-sweep 520ms cubic-bezier(0.16, 1, 0.3, 1) both,
-      ch-hold linear;
-    animation-delay: var(--ch-delay), 0ms;
-    animation-duration: 520ms, calc(var(--ch-delay) + 240ms);
+      ch-ink 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: var(--ch-delay);
   }
   @keyframes ch-sweep {
     from { background-size: 0% 100%; }
     to { background-size: 100% 100%; }
   }
-  @keyframes ch-hold {
-    from { color: inherit; }
-    to { color: inherit; }
+  /* Text darkens in the same window the highlight floods in, so light
+     text never sits on fresh yellow in dark mode. Both keyframes are
+     explicit — an implicit "from" resolved from an oklch theme token
+     mis-serializes in Chromium (the reason this used to be a hold hack). */
+  @keyframes ch-ink {
+    from { color: var(--card-foreground); }
+    to { color: var(--ch-ink); }
   }
   @media (prefers-reduced-motion: reduce) {
     .ch-mark {
