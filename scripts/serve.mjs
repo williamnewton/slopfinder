@@ -38,13 +38,26 @@ createServer((req, res) => {
   path = normalize(path).replace(/^(\.\.[/\\])+/, '');
   if (path.endsWith('/')) path += 'index.html';
   const file = join(SITE_DIR, path);
-  // Directories (e.g. /downloads) used to reach readFileSync and crash on EISDIR.
-  if (!file.startsWith(SITE_DIR + sep) || !statSync(file, { throwIfNoEntry: false })?.isFile()) {
+  if (!file.startsWith(SITE_DIR + sep)) {
+    notFound();
+    return;
+  }
+  let body;
+  try {
+    // Directories (e.g. /downloads) used to reach readFileSync and crash on EISDIR.
+    if (!statSync(file, { throwIfNoEntry: false })?.isFile()) {
+      notFound();
+      return;
+    }
+    body = readFileSync(file);
+  } catch {
+    // statSync still throws on ENOTDIR (/index.html/x), ENAMETOOLONG and NUL
+    // bytes (/%00); treat those as missing instead of crashing the server.
     notFound();
     return;
   }
   res.writeHead(200, { 'Content-Type': TYPES[extname(file)] ?? 'application/octet-stream' });
-  res.end(readFileSync(file));
+  res.end(body);
 }).listen(PORT, '127.0.0.1', () => {
   console.log(`Serving site/ at http://localhost:${PORT}`);
 });
