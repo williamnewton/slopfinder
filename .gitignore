@@ -2,3 +2,8 @@ node_modules/
 dist/
 site/downloads/
 .DS_Store
+
+# Secrets — never commit env files or the extension signing key
+.env*
+*.pem
+*.crx
